@@ -1,7 +1,11 @@
 <template>
-  <nav>
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
+  <nav class="nav-bar">
+    <div class="title">title</div>
+    <div class="choices">
+      <div>elem-1</div>
+      <div>elem-1</div>
+      <div>elem-1</div>
+    </div>
   </nav>
   <router-view/>
 </template>
@@ -16,15 +20,19 @@
 }
 
 nav {
-  padding: 30px;
+  height: 35px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
-nav a {
-  font-weight: bold;
-  color: #2c3e50;
+.title {
+  width: 15%;
+  font-size: 20px;
 }
-
-nav a.router-link-exact-active {
-  color: #42b983;
+.choices {
+  display: flex;
+  justify-content: space-around;
+  width: 40%;
 }
 </style>
