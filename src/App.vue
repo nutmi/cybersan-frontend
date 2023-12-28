@@ -2,9 +2,8 @@
   <nav class="nav-bar">
     <div class="title">title</div>
     <div class="choices">
-      <div>elem-1</div>
-      <div>elem-1</div>
-      <div>elem-1</div>
+      <div>user</div>
+      <div>logout</div>
     </div>
   </nav>
   <router-view/>
@@ -32,7 +31,7 @@ nav {
 }
 .choices {
   display: flex;
-  justify-content: space-around;
+  justify-content: end;
   width: 40%;
 }
 </style>
