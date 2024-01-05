@@ -1,27 +1,17 @@
 <template>
   <body>
-    <div class="body-container">
-      <div class="elem-1">elem1</div>
-
-      <div class="chat-container">
-        <div class="messages">
-          <div
-            v-for="message in messages"
-            :key="message.user"
-            :class="message.whos_message ? 'my-message' : 'message'"
-          >
-            <span class="author">{{ message.name }}</span>
-            <br />
-            {{ message.message }}
-          </div>
-        </div>
-        <div class="input-container">
-          <input type="text" class="message-input" v-model="message" />
-          <button class="send-button" v-on:click="sendMessage">send</button>
-        </div>
+    <div class="about">
+      chinase copy of reddit
+    </div>
+    <div class="chats">
+      <div v-for="chat in chats" :key="chat.id" class="chat">
+        <img :src="chat.image" alt="">
+        <router-link :to="{name: 'chat', params: {id: chat.id}}" class="link">{{ chat.name }}</router-link>
       </div>
-
-      <div class="elem-3">elem3</div>
+    </div>
+    <div>
+      created by:
+      egor, katja
     </div>
   </body>
 </template>
@@ -32,163 +22,48 @@ import axios from "axios";
 export default {
   data() {
     return {
-      messages: [],
-      message: "",
-      user_id: null,
-    };
+      chats: []
+    }
   },
   mounted() {
-    console.log("mounted");
-    this.getUser(); // Fetch user information on component mount
-    this.getMessages();
+    this.getChat()
   },
   methods: {
-    getMessages() {
-      const token = localStorage.getItem("token");
-      axios
-        .get("http://localhost:8000/", {
-          headers: { Authorization: `Token ${token}` },
-        })
-        .then((res) => {
-          this.messages = res.data;
-        });
+    getChat() {
+      axios.get('http://127.0.0.1:8000/chat/').
+      then((res) => {
+        this.chats = res.data
+    })
     },
-    getUser() {
-      const token = localStorage.getItem("token");
-      console.log(token);
-      axios
-        .get("http://127.0.0.1:8000/auth/users/me/", {
-          headers: {
-            Authorization: `Token ${token}`,
-          },
-        })
-        .then((res) => {
-          console.log(res.data.id);
-          this.user_id = res.data.id;
-        })
-        .catch((error) => {
-          console.error("Error fetching user:", error);
-        });
-    },
-    sendMessage() {
-      if (!this.user_id) {
-        console.error("User ID not available. Unable to send message.");
-        return;
-      }
+  }
+}
 
-      const token = localStorage.getItem("token");
-      axios
-        .post(
-          "http://127.0.0.1:8000/",
-          {
-            message: this.message,
-            user: this.user_id,
-          },
-          {
-            headers: {
-              Authorization: `Token ${token}`,
-            },
-          }
-        )
-        .then(() => {
-          this.getMessages();
-          this.message = "";
-        })
-        .catch((error) => {
-          console.error("Error sending message:", error);
-        });
-    },
-  },
-};
 </script>
 
 <style scoped>
-body {
-  margin: 0;
-  padding: 0;
-  font-family: Arial, sans-serif;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  height: 100vh;
-}
 
-.body-container {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+template {
   height: 100%;
-  width: 100%;
-  background-color: grey;
 }
-
-.elem-1 {
-  background-color: blanchedalmond;
-}
-.chat-container {
+body {
+  height: 100%;
   display: flex;
   flex-direction: column;
-  background-color: grey;
-  width: 40%;
-  height: 90%;
-}
-
-.elem-3 {
-  background-color: aqua;
-}
-
-.messages {
-  height: 93%;
-  background-color: rgba(0, 0, 0, 0.467);
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column; /* Align messages to the bottom */
-  justify-content: flex-start;
-}
-
-.message {
-  background-color: #b1bbc146;
-  color: #fff;
-  padding: 10px;
-  margin-bottom: 5px;
-  border-radius: 5px;
-  font-size: 12px;
-  text-align: start;
-}
-.my-message {
-  background-color: rgba(99, 104, 106, 0.368);
-  color: #fff;
-  padding: 10px;
-  margin-bottom: 5px;
-  border-radius: 5px;
-  font-size: 12px;
-  text-align: end;
-}
-
-.input-container {
-  display: flex;
-  background-color: rgba(128, 128, 128, 0.471);
-  height: 7%;
   align-items: center;
 }
-.message-input {
-  flex: 1;
-  padding: 8px;
-  margin-right: 10px;
-  font-size: 10px;
+.chats {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  background-color: grey;
+  justify-content: center;
 }
 
-.send-button {
-  padding: 8px 15px;
-  background-color: black;
-  color: yellow;
-  cursor: pointer;
-  font-size: 10px;
-}
+.chat {
+  padding: 10px;
+  text-align: center;
+  margin-left: 20px;
+  margin-right: 20px;
 
-.author {
-  font-weight: bold;
-  margin-right: 5px;
-  color: rgba(255, 213, 0, 0.622);
 }
 </style>

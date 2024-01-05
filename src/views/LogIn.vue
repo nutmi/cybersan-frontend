@@ -26,10 +26,12 @@ export default {
                 username: this.username,
                 password: this.password
             }).
-            then(function(response) {
+            then((response) =>{
                 console.log(response.data.auth_token)
                 const token = response.data.auth_token
                 localStorage.setItem("token", token)
+                this.$router.push({path:'/'})
+
             })
         }
     }
