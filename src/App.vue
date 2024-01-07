@@ -7,11 +7,11 @@
       <div>
         <router-link :to="{name: 'me'}" class="link">user</router-link>
       </div>
-      <div v-if="authorized" @click="logOut">
-        logout
-      </div>
-      <div v-else>
+      <div v-if="store.authorized == false">
         <router-link :to="{name: 'login'}" class="login">login</router-link>
+      </div>
+      <div v-else-if="store.authorized == true" @click="logOut">
+        logout
       </div>
     </div>
   </nav>
@@ -21,17 +21,22 @@
 <script>
 import axios from 'axios'
 import { ref } from 'vue'
+import { usePostStore } from './stores/post'
 
 export default {
   data() {
     return {
       token: ref(''),
-      authorized: true
     }
   },
   mounted() {
     this.getToken()
     this.chechAuthorized()
+  },
+  computed: {
+    store() {
+      return usePostStore()
+    },
   },
   methods: {
     chechAuthorized() {
@@ -43,24 +48,25 @@ export default {
       this.token = localStorage.getItem('token')
       console.log(this.token)
   },
-  logOut() {
-    const token = localStorage.getItem("token");
-    axios
-        .post("http://127.0.0.1:8000/auth/token/logout/", null, {
-            headers: {
-                Authorization: `Token ${token}`,
-            },
-        })
-        .then((res) => {
-            console.log(res.data);
-            localStorage.removeItem('token')
-            this.$router.push('login')
-            this.authorized = false
-        })
-        .catch((error) => {
-            console.error("Error logging out:", error);
-        });
-      }
+    logOut() {
+      const token = localStorage.getItem("token");
+      const store = usePostStore()
+      axios
+          .post("http://127.0.0.1:8000/auth/token/logout/", null, {
+              headers: {
+                  Authorization: `Token ${token}`,
+              },
+          })
+          .then((res) => {
+              console.log(res.data);
+              localStorage.removeItem('token')
+              store.setAuthorized(false)
+              this.$router.push('login')
+          })
+          .catch((error) => {
+              console.error("Error logging out:", error);
+          });
+        }
   }
 }
 </script>

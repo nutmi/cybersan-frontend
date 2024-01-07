@@ -11,6 +11,7 @@
 
 <script>
 import axios from 'axios'
+import { usePostStore } from '../stores/post'
 
 export default {
     name: "Login",
@@ -22,6 +23,7 @@ export default {
     },
     methods: {
         Login() {
+            const store = usePostStore()
             axios.post('http://127.0.0.1:8000/auth/token/login', {
                 username: this.username,
                 password: this.password
@@ -30,6 +32,7 @@ export default {
                 console.log(response.data.auth_token)
                 const token = response.data.auth_token
                 localStorage.setItem("token", token)
+                store.setAuthorized(true)
                 this.$router.push({path:'/'})
 
             })
