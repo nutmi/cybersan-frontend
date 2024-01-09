@@ -14,6 +14,12 @@ npm run serve
 ```
 npm run build
 ```
+### Also please run
+```
+npm install axios
+npm install pinia
+```
+
 
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
