@@ -16,7 +16,6 @@
             </div>
         </div>
   
-  
         <div class="chat-container">
           <div class="messages">
             <div
@@ -46,27 +45,29 @@ import axios from 'axios'
 
 export default {
     mounted() {
-        this.getId()
         this.getMessage()
         this.getUser()
+        this.timer = setInterval(this.getMessage, 5000)
     },
     data() {
         return {
             user_id: '',
-            id: '',
+            chat_id: '',
             messages: [],
             text_message: '',
             showUser: false,
-            displayedUser: {}
+            displayedUser: {},
+            timer: ''
         }
     },
     methods: {
         getId() {
-            this.id = this.$route.params.id
+            this.chat_id = this.$route.params.id
         },
         getMessage() {
             const token = localStorage.getItem("token");
-            axios.get('http://localhost:8000/message/?chatid='+ this.id, {
+            this.getId()
+            axios.get('http://localhost:8000/message/?chatid='+ this.chat_id, {
                 headers: {
                     Authorization: `Token ${token}`
                 }
@@ -99,8 +100,7 @@ export default {
                 console.error("User ID not available. Unable to send message.");
                 return;
             }
-
-
+            
             const token = localStorage.getItem("token");
             axios
                 .post(
@@ -108,7 +108,7 @@ export default {
                 {
                     text: this.text_message,
                     user: this.user_id,
-                    chat: this.id
+                    chat: this.chat_id
 
                 },
                 {
