@@ -61,7 +61,7 @@ export default {
               console.log(res.data);
               localStorage.removeItem('token')
               store.setAuthorized(false)
-              this.$router.push('login')
+              this.$router.push({path: '/'})
           })
           .catch((error) => {
               console.error("Error logging out:", error);

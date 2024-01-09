@@ -45,6 +45,7 @@ import axios from 'axios'
 
 export default {
     mounted() {
+        this.getId()
         this.getMessage()
         this.getUser()
         this.timer = setInterval(this.getMessage, 5000)
@@ -65,17 +66,19 @@ export default {
             this.chat_id = this.$route.params.id
         },
         getMessage() {
-            const token = localStorage.getItem("token");
-            this.getId()
-            axios.get('http://localhost:8000/message/?chatid='+ this.chat_id, {
-                headers: {
-                    Authorization: `Token ${token}`
-                }
-            })
-            .then((res) => {
-                this.messages = res.data
-            })
-        },
+          const token = localStorage.getItem("token");
+          const apiUrl = `http://localhost:8000/message/?chatid=` + this.chat_id;
+
+          const config = token ? { headers: { Authorization: `Token ${token}` } } : {};
+
+          axios.get(apiUrl, config)
+              .then((res) => {
+                  this.messages = res.data;
+              })
+              .catch((error) => {
+                  console.error("Error fetching messages:", error);
+              });
+      },
         getUser() {
             const token = localStorage.getItem("token");
             console.log(token);
@@ -87,7 +90,7 @@ export default {
                 },
                 })
                 .then((res) => {
-                console.log(res.data.id);
+                console.log('user' + res.data.id);
                 this.user_id = res.data.id;
                 })
                 .catch((error) => {

@@ -1,6 +1,7 @@
 <template>
     <body>
-        <div class="usename">
+        <div v-if="userinfo">
+            <div class="usename">
             {{ userinfo.username }}
         </div>
         <div class="description">
@@ -13,6 +14,10 @@
                     {{ achievement.achivment.name }} - {{ achievement.achivment.description }}
                 </li>
             </ul>
+            </div>
+        </div>
+        <div v-else>
+            anonymous
         </div>
     </body>
 </template>
@@ -33,7 +38,8 @@ export default {
     methods: {
         userInfo() {
             const token = localStorage.getItem('token')
-            axios.get('http://localhost:8000/auth/users/me/', {
+            if (token) {
+                axios.get('http://localhost:8000/auth/users/me/', {
                 headers: {
                     Authorization: 'Token ' + token
                 }
@@ -41,6 +47,9 @@ export default {
             .then((res) => {
                 this.userinfo = res.data
             })
+            } else {
+                this.userinfo = ''
+            }
         }
     }
 }
