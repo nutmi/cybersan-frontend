@@ -4,6 +4,7 @@ import SingUp from "../views/SingUp.vue"
 import LogIn from "../views/LogIn.vue"
 import ChatDetail from '../views/ChatDetail.vue'
 import AboutMe from '../views/aboutMe.vue'
+import updatePasswordVue from '../views/updatePassword.vue'
 
 
 const routes = [
@@ -31,6 +32,11 @@ const routes = [
     path: '/me',
     name: 'me',
     component: AboutMe
+  },
+  {
+    path: '/updatepassword',
+    name: 'updatepassword',
+    component: updatePasswordVue
   },
 ]
 
