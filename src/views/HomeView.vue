@@ -11,7 +11,7 @@
     </div>
     <div>
       created by:
-      egor, katja
+
     </div>
   </body>
 </template>

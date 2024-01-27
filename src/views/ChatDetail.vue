@@ -30,8 +30,8 @@
           </div>
           
           <div class="message input">
-            <span class="author">{{ username }}</span>
-            <span class="terminalName"> {{ terminalName }}</span>
+            <span class="author">{{ user_data['username'] }}</span>
+            <span class="terminalName"> {{ user_data['terminalName'] }}</span>
             <input type="text" class="message-input" v-model="text_message"  @keydown.enter="sendMessage()"/>
           </div>
 
@@ -52,36 +52,81 @@ export default {
     this.getMessage();
     this.getUser();
     this.timer = setInterval(this.getMessage, 5000);
+
+    this.$refs.messagesContainer.addEventListener('scroll', this.handleScroll);
   },
   data() {
     return {
-      user_id: '',
       chat_id: this.$route.params.id,
       messages: [],
       text_message: '',
       showUser: false,
       displayedUser: {},
       timer: '',
-      terminalName: '',
-      username: '',
-      user_data: {}
+      user_data: {},
+      page: 1,
+      loadingMore: false
+
     };
   },
   methods: {
-    scrollToBottom() {
+
+    handleScroll() {
       const container = this.$refs.messagesContainer;
-      container.scrollTop = container.scrollHeight;
+
+      // Check if the user has scrolled to the top
+      const isAtTop = container.scrollTop === 0;
+
+      if (isAtTop && !this.loadingMore) {
+        // Load more data only if not already loading
+        this.loadMoreData();
+      }
     },
-    getMessage() {
+
+    loadMoreData() {
+      this.page = this.page + 1
+      // Set loadingMore to true to prevent multiple simultaneous requests
+      this.loadingMore = true;
+
+      // Implement your logic to load more data
       const token = localStorage.getItem('token');
-      const apiUrl = `http://localhost:8000/message/?chatid=` + this.chat_id;
+      const apiUrl = `http://localhost:8000/message/?chatid=${this.chat_id}&page=${this.page}`;
 
       const config = token ? { headers: { Authorization: `Token ${token}` } } : {};
 
       axios
         .get(apiUrl, config)
         .then((res) => {
-          this.messages = res.data;
+          // Append the new messages to the existing ones
+          this.messages = [...this.messages, ...res.data.results];
+          this.loadingMore = false;
+        })
+        .catch((error) => {
+          console.error('Error fetching more messages:', error);
+          this.loadingMore = false;
+        });
+    },
+
+    scrollToBottom() {
+      // Ensure that the container and its properties are available
+      const container = this.$refs.messagesContainer;
+      if (container) {
+        container.scrollTop = container.scrollHeight;
+      }
+    },
+    getMessage() {
+      const token = localStorage.getItem('token');
+      const apiUrl = 'http://localhost:8000/message/?chatid=' + this.chat_id;
+
+      const config = token ? { headers: { Authorization: `Token ${token}` } } : {};
+
+      axios
+        .get(apiUrl, config)
+        .then((res) => {
+          this.messages = res.data.results;
+          this.messages.reverse()
+          const url = (res.data.next)
+          console.log(url[url.leng])
           this.$nextTick(() => {
             this.scrollToBottom()
           })
@@ -100,9 +145,6 @@ export default {
             },
           })
           .then((res) => {
-            this.user_id = res.data.id;
-            this.terminalName = res.data.terminalName;
-            this.username = res.data.username;
             this.user_data = {username: res.data.username, terminalName: res.data.terminalName, userId: res.data.id}
           })
           .catch((error) => {
@@ -111,7 +153,7 @@ export default {
       }
     },
     sendMessage() {
-      if (!this.user_id) {
+      if (!this.user_data['userId']) {
         console.error('User ID not available. Unable to send message.');
         return;
       }
@@ -122,7 +164,7 @@ export default {
           'http://127.0.0.1:8000/message/',
           {
             text: this.text_message,
-            user: this.user_id,
+            user: this.user_data['userId'],
             chat: this.chat_id,
           },
           {
@@ -150,6 +192,12 @@ export default {
 
 
 <style scoped>
+
+@font-face {
+  font-family: Fallout;
+  src: url(D:\python\web\cybersan\cybersan-frontend\public\monofonto.zip);
+}
+
 body {
   margin: 0;
   padding: 0;
@@ -218,7 +266,6 @@ body {
   border-radius: 5px;
   font-size: 14px; /* Slightly larger font size */
   text-align: end;
-;
 }
 
 .message-input {
